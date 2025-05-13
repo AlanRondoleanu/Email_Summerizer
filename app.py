@@ -4,8 +4,9 @@ import os
 
 app = Flask(__name__)
 
-genai.configure(api_key=os.environ.get("GOOGLE_API_KEY"))
-model = genai.GenerativeModel("gemini-pro")
+api_key = "AIzaSyCpinojIutp_G0LLPLRfWDlyA88hAyOYOA"
+genai.configure(api_key)
+model = genai.GenerativeModel("models/gemini-2.0-flash")
 
 @app.route("/")
 def home():
