@@ -1,0 +1,25 @@
+from flask import Flask, request, jsonify
+import google.generativeai as genai
+import os
+
+app = Flask(__name__)
+
+genai.configure(api_key=os.environ.get("GOOGLE_API_KEY"))
+model = genai.GenerativeModel("gemini-pro")
+
+@app.route("/summarize", methods=["POST"])
+def summarize():
+    data = request.get_json()
+    email = data.get("email_body", "")
+    
+    if not email:
+        return jsonify({"error": "No email body provided"}), 400
+
+    try:
+        response = model.generate_content(f"Summarize this email:\n{email}")
+        return jsonify({"summary": response.text})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+if __name__ == "__main__":
+    app.run()
