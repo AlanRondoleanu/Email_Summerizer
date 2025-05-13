@@ -11,18 +11,19 @@ model = genai.GenerativeModel("gemini-pro")
 def home():
     return "It works!"
 
-
-@app.route("/summarize", methods=["GET"])
-def test_get():
-    return "GET request to /summarize received!"
-
 @app.route("/summarize", methods=["POST"])
-def test_post():
+def summarize():
     data = request.get_json()
-    return jsonify({
-        "message": "POST request to /summarize received!",
-        "data_received": data
-    })
+    email = data.get("email_body", "")
+    
+    if not email:
+        return jsonify({"error": "No email body provided"}), 400
+
+    try:
+        response = model.generate_content(f"Summarize this email:\n{email}")
+        return jsonify({"summary": response.text})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
     app.run()
