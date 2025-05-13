@@ -7,6 +7,11 @@ app = Flask(__name__)
 genai.configure(api_key=os.environ.get("GOOGLE_API_KEY"))
 model = genai.GenerativeModel("gemini-pro")
 
+@app.route("/")
+def home():
+    return "It works!"
+
+
 @app.route("/summarize", methods=["POST"])
 def summarize():
     data = request.get_json()
