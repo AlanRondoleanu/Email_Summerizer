@@ -17,7 +17,8 @@ def home():
 def summarize():
     data = request.get_json()
     email = data.get("email_body", "")
-    
+    print("Received data:", data)
+
     if not email:
         return jsonify({"error": "No email body provided"}), 400
 
