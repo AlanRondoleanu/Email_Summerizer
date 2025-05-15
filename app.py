@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 import google.generativeai as genai
 import os
 import requests
-import json
+from bs4 import BeautifulSoup
 
 app = Flask(__name__)
 
@@ -17,15 +17,17 @@ def home():
 @app.route("/summarize", methods=["POST"])
 def summarize():
     data = request.get_json()
-    data_json = json.dumps({"email_body": data}, indent=2)
-    email = data_json.get("email_body", "")
-    print("Received data:", data)
+    email_body_raw = data.get("email_body", "") if data else ""
 
-    if not email:
+    if not email_body_raw:
         return jsonify({"error": "No email body provided"}), 400
 
+    # Convert raw HTML email body to plain text
+    soup = BeautifulSoup(email_body_raw, "html.parser")
+    email_body_text = soup.get_text(separator="\n", strip=True)
+
     try:
-        response = model.generate_content(f"Summarize this email:\n{email}")
+        response = model.generate_content(f"Summarize this email:\n{email_body_text}")
         summary = response.text
 
         # Send summary to Discord
