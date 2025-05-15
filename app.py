@@ -22,9 +22,11 @@ def summarize():
     if not email_body_raw:
         return jsonify({"error": "No email body provided"}), 400
 
-    # Convert raw HTML email body to plain text
-    soup = BeautifulSoup(email_body_raw, "html.parser")
-    email_body_text = soup.get_text(separator="\n", strip=True)
+    try:
+        soup = BeautifulSoup(email_body_raw, "html.parser")
+        email_body_text = soup.get_text(separator="\n", strip=True)
+    except Exception as e:
+        return jsonify({"error": f"Failed to parse email body HTML: {str(e)}"}), 400
 
     try:
         response = model.generate_content(f"Summarize this email:\n{email_body_text}")
