@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 import google.generativeai as genai
 import os
 import requests
+import json
 
 app = Flask(__name__)
 
@@ -16,7 +17,8 @@ def home():
 @app.route("/summarize", methods=["POST"])
 def summarize():
     data = request.get_json()
-    email = data.get("email_body", "")
+    data_json = json.dumps({"email_body": data}, indent=2)
+    email = data_json.get("email_body", "")
     print("Received data:", data)
 
     if not email:
